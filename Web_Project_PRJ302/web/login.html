@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập - Luxury Car Sales</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .login-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-gray) 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 2rem;
+        }
+        
+        .login-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><path d="M0 300L50 275L100 300L150 250L200 275L250 325L300 300L350 275L400 325L450 300L500 250L550 275L600 300L650 275L700 250L750 300L800 275L850 300L900 275L950 325L1000 300L1050 275L1100 300L1150 275L1200 300V600H0Z" fill="rgba(212, 175, 55, 0.05)"/></svg>') repeat-x;
+            opacity: 0.3;
+            animation: wave 20s linear infinite;
+        }
+        
+        .login-container {
+            position: relative;
+            z-index: 2;
+            background: white;
+            max-width: 500px;
+            width: 100%;
+            padding: 3rem;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .login-logo {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary-dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-logo span {
+            color: var(--primary-gold);
+        }
+        
+        .login-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--light-gray);
+            background: white;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+        }
+        
+        .form-control.error {
+            border-color: var(--accent-red);
+        }
+        
+        .error-message {
+            color: var(--accent-red);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .forgot-password {
+            color: var(--primary-gold);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        
+        .forgot-password:hover {
+            color: var(--accent-red);
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 1.2rem;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--light-gray);
+        }
+        
+        .divider span {
+            position: relative;
+            background: white;
+            padding: 0 1rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .signup-link {
+            text-align: center;
+            color: var(--text-light);
+        }
+        
+        .signup-link a {
+            color: var(--primary-gold);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .signup-link a:hover {
+            color: var(--accent-red);
+        }
+        
+        .back-home {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            z-index: 10;
+        }
+        
+        .back-home a {
+            color: white;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .back-home a:hover {
+            color: var(--primary-gold);
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="back-home">
+        <a href="index.html">
+            <i class="fas fa-arrow-left"></i> Về trang chủ
+        </a>
+    </div>
+    
+    <section class="login-section">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-logo">
+                    LUXURY<span>CARS</span>
+                </div>
+                <p class="login-subtitle">Đăng nhập để tiếp tục</p>
+            </div>
+            
+            <form id="loginForm" action="LoginServlet" method="POST">
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        class="form-control" 
+                        placeholder="Nhập tên đăng nhập"
+                        required
+                    >
+                    <div class="error-message" id="usernameError">Vui lòng nhập tên đăng nhập</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-control" 
+                        placeholder="Nhập mật khẩu"
+                        required
+                    >
+                    <div class="error-message" id="passwordError">Vui lòng nhập mật khẩu</div>
+                </div>
+                
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <span>Ghi nhớ đăng nhập</span>
+                    </label>
+                    <a href="#" class="forgot-password">Quên mật khẩu?</a>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                </button>
+                
+                <div class="divider">
+                    <span>hoặc</span>
+                </div>
+                
+                <div class="signup-link">
+                    Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+                </div>
+            </form>
+        </div>
+    </section>
+    
+    <script>
+        // Form validation
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username');
+            const password = document.getElementById('password');
+            let isValid = true;
+            
+            // Reset errors
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            document.querySelectorAll('.form-control').forEach(el => el.classList.remove('error'));
+            
+            // Validate username
+            if (username.value.trim() === '') {
+                username.classList.add('error');
+                document.getElementById('usernameError').classList.add('show');
+                isValid = false;
+            }
+            
+            // Validate password
+            if (password.value.trim() === '') {
+                password.classList.add('error');
+                document.getElementById('passwordError').classList.add('show');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Submit form to backend
+                this.submit();
+                
+                // Hoặc dùng AJAX (ví dụ):
+                /*
+                const formData = new FormData(this);
+                fetch('LoginServlet', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        alert('Đăng nhập thất bại! Kiểm tra lại thông tin.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra. Vui lòng thử lại.');
+                });
+                */
+            }
+        });
+        
+        // Remove error on input
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('error');
+                const errorId = this.id + 'Error';
+                document.getElementById(errorId).classList.remove('show');
+            });
+        });
+    </script>
+    
+</body>
+</html>
