@@ -115,7 +115,7 @@
     </head>
     <body>
         <div class="register-container">
-            <h2>REGISTER</h2>
+            <h2><strong>REGISTER</strong></h2>
 
             <form action="MainController" method="post">
                 <input type="hidden" name="action" value="register" />

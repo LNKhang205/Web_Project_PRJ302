@@ -4,10 +4,14 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/D:/PRJ302/PRJ302_Project/src/java/controller/LoginController.java</file>
+            <file>file:/D:/PRJ302/PRJ302_Project/src/java/model/CarCategoryDAO.java</file>
             <file>file:/D:/PRJ302/PRJ302_Project/web/index.jsp</file>
+            <file>file:/D:/PRJ302/PRJ302_Project/nbproject/build-impl.xml</file>
             <file>file:/D:/PRJ302/PRJ302_Project/web/admin/dashboard.jsp</file>
             <file>file:/D:/PRJ302/PRJ302_Project/src/java/model/ReviewDAO.java</file>
             <file>file:/D:/PRJ302/PRJ302_Project/src/java/controller/MainController.java</file>
+            <file>file:/D:/PRJ302/PRJ302_Project/src/java/controller/ProfileController.java</file>
+            <file>file:/D:/PRJ302/PRJ302_Project/src/java/model/CarCategoryDTO.java</file>
             <file>file:/D:/PRJ302/PRJ302_Project/src/java/model/ReviewDTO.java</file>
             <file>file:/D:/PRJ302/PRJ302_Project/src/java/model/UserDAO.java</file>
             <file>file:/D:/PRJ302/PRJ302_Project/web/image/index1.jpg</file>
@@ -18,6 +22,7 @@
             <file>file:/D:/PRJ302/PRJ302_Project/src/java/controller/ReviewController.java</file>
             <file>file:/D:/PRJ302/PRJ302_Project/src/java/controller/LogoutController.java</file>
             <file>file:/D:/PRJ302/PRJ302_Project/web/register.jsp</file>
+            <file>file:/D:/PRJ302/PRJ302_Project/web/customer/profile.jsp</file>
             <file>file:/D:/PRJ302/PRJ302_Project/src/java/model/UserDTO.java</file>
             <file>file:/D:/PRJ302/PRJ302_Project/web/E403.jsp</file>
             <file>file:/D:/PRJ302/PRJ302_Project/src/java/controller/RegisterController.java</file>

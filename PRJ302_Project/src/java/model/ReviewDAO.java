@@ -18,15 +18,11 @@ import utils.DbUtils;
 public class ReviewDAO {
 
     public boolean addReview(ReviewDTO review) {
-        boolean result = false;
-
         String sql = "INSERT INTO Review "
-                + "(user_id, car_id, rating, comment, review_date"
+                + "(user_id, car_id, rating, comment, review_date) "
                 + "VALUES (?, ?, ?, ?, ?)";
 
-        try {
-            Connection conn = DbUtils.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
+        try ( Connection conn = DbUtils.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, review.getUserId());
             ps.setInt(2, review.getCarId());
@@ -34,13 +30,12 @@ public class ReviewDAO {
             ps.setString(4, review.getComment());
             ps.setTimestamp(5, review.getReviewDate());
 
-            result = ps.executeUpdate() > 0;
+            return ps.executeUpdate() > 0;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return result;
+        return false;
     }
 
     public List<ReviewDTO> getReviewsByCarId(int carId) {
@@ -77,6 +72,57 @@ public class ReviewDAO {
             e.printStackTrace();
         }
         return list;
+    }
+
+    // chặn review trùng
+    public boolean hasReviewed(int userId, int carId) {
+        String sql = "SELECT 1 FROM Review WHERE user_id = ? AND car_id = ?";
+
+        try ( Connection conn = DbUtils.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ps.setInt(2, carId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // xóa review của user
+    public boolean deleteReview(int reviewId, int userId) {
+        String sql = "DELETE FROM Review WHERE review_id = ? AND user_id = ?";
+
+        try ( Connection conn = DbUtils.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, reviewId);
+            ps.setInt(2, userId);
+            return ps.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // điểm trung bình của xe
+    public double getAverageRating(int carId) {
+        String sql = "SELECT AVG(rating) FROM Review WHERE car_id = ?";
+
+        try ( Connection conn = DbUtils.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, carId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
 }

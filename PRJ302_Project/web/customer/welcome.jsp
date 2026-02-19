@@ -4,6 +4,9 @@
     Author     : Lenove
 --%>
 
+
+<!--Welcome = Showroom-->
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
@@ -18,11 +21,10 @@
             <c:when test="${not empty user}">
                 <h1>
                     Welcome, ${user.fullName}
-                    <img src="images/default-avatar.png" width="80" />
-                    <p>${sessionScope.user.fullName}</p>
                 </h1>
 
                 <a href="../MainController?action=logout">Logout</a><br/>
+                <a href="profile.jsp">My Profile</a><br/>
                 <a href="review.jsp">Review (test)</a><br/>
             </c:when>
 

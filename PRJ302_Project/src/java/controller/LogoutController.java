@@ -36,7 +36,7 @@ public class LogoutController extends HttpServlet {
         if (session.getAttribute("user") != null) {
             session.invalidate();
         }
-        String url = "login.jsp";
+        String url = "index.jsp";
         response.sendRedirect(url);
     }
 

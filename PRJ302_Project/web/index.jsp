@@ -172,15 +172,28 @@
             <div class="header">
                 <div class="logo">LuxuryCars</div>
                 <div class="menu">
-                    <c:if test="${sessionScope.user == null}">
-                        <a href="#" class="btn" onclick="openLogin()">Login</a>
-                        <a href="register.jsp" class="btn">Register</a>
-                    </c:if>
-                    <c:if test="${sessionScope.user != null}">
-                        <span style="margin-right: 15px">Hello, ${sessionScope.user.fullName}</span>
-                        <a href="welcome.jsp">Dashboard</a>
-                        <a href="MainController?action=logout">Logout</a>
-                    </c:if>
+                    <c:choose>
+                        <%-- Nếu chưa có session (Chưa login) --%>
+                        <c:when test="${empty sessionScope.user}">
+                            <a href="#" class="btn" onclick="openLogin()">Login</a>
+                            <a href="register.jsp" class="btn">Register</a>
+                        </c:when>
+
+                        <%-- Nếu ĐÃ có session (Đã login rồi) --%>
+                        <c:otherwise>
+                            <span style="color: white; margin-right: 15px;">
+                                Hello, <strong>${sessionScope.user.fullName}</strong>
+                            </span>
+                            <%-- Điều hướng về đúng trang theo Role --%>
+                            <c:if test="${sessionScope.user.role == 'ADMIN'}">
+                                <a href="admin/dashboard.jsp" class="btn">Dashboard</a>
+                            </c:if>
+                            <c:if test="${sessionScope.user.role == 'CUSTOMER'}">
+                                <a href="customer/welcome.jsp" class="btn">Showroom</a>
+                            </c:if>
+                            <a href="MainController?action=logout" class="btn" style="background: #d32f2f;">Logout</a>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
 
@@ -222,3 +235,5 @@
         </c:if>
     </body>
 </html>
+
+giữ nguyên code logic của tôi đi chứ

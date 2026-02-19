@@ -317,7 +317,7 @@ public class UserDAO {
      * @param user
      * @return true nếu thành công, false nếu thất bại
      */
-    public boolean updateUser(UserDTO user) {
+    public boolean updateUserByAdmin(UserDTO user) {
         Connection conn = null;
         PreparedStatement pst = null;
 
@@ -483,37 +483,31 @@ public class UserDAO {
      * @return true nếu đã tồn tại, false nếu chưa
      */
     public boolean isEmailExist(String email) {
-        Connection conn = null;
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DbUtils.getConnection();
-            String sql = "SELECT * FROM [User] WHERE email=?";
-            pst = conn.prepareStatement(sql);
+        String sql = "SELECT email FROM [User] WHERE email=?";
+        try ( Connection conn = DbUtils.getConnection();  PreparedStatement pst = conn.prepareStatement(sql)) {
             pst.setString(1, email);
-            rs = pst.executeQuery();
-
-            return rs.next();
-
+            try ( ResultSet rs = pst.executeQuery()) {
+                return rs.next(); // Có tồn tại -> true
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (pst != null) {
-                    pst.close();
-                }
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
+        return false;
+    }
+
+    public boolean isEmailExist(String email, int userId) {
+        // SQL: Tìm email này nhưng phải khác ID của người đang sửa
+        String sql = "SELECT email FROM [User] WHERE email=? AND user_id <> ?";
+        try ( Connection conn = DbUtils.getConnection();  PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, email);
+            pst.setInt(2, userId);
+            try ( ResultSet rs = pst.executeQuery()) {
+                return rs.next(); // Có người KHÁC dùng email này -> true
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**
@@ -547,6 +541,24 @@ public class UserDAO {
         }
 
         return result > 0;
+    }
+
+    public boolean updateCustomerProfile(UserDTO user) {
+        String sql = "UPDATE [User] SET full_name=?, email=?, phone=?, updated_at=GETDATE() WHERE user_id=?";
+
+        // Try-with-resources: Tự động đóng resource trong ngoặc ()
+        try ( Connection conn = DbUtils.getConnection();  PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, user.getFullName());
+            pst.setString(2, user.getEmail());
+            pst.setString(3, user.getPhone());
+            pst.setInt(4, user.getUserId());
+
+            return pst.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }
