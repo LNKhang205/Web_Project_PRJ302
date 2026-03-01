@@ -1,10 +1,12 @@
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập - Luxury Car Sales</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -203,7 +205,7 @@
 <body>
     
     <div class="back-home">
-        <a href="index.html">
+        <a href="${pageContext.request.contextPath}/JSP/index.jsp">
             <i class="fas fa-arrow-left"></i> Về trang chủ
         </a>
     </div>
@@ -217,7 +219,7 @@
                 <p class="login-subtitle">Đăng nhập để tiếp tục</p>
             </div>
             
-            <form id="loginForm" action="LoginServlet" method="POST">
+            <form id="loginForm" action="${pageContext.request.contextPath}/LoginServlet" method="POST">
                 <div class="form-group">
                     <label for="username">Tên đăng nhập</label>
                     <input 
@@ -261,7 +263,7 @@
                 </div>
                 
                 <div class="signup-link">
-                    Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+                    Chưa có tài khoản? <a href="${pageContext.request.contextPath}/JSP/register.jsp">Đăng ký ngay</a>
                 </div>
             </form>
         </div>

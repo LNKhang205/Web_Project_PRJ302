@@ -11,6 +11,7 @@ import java.sql.Timestamp;
  * @author VNT
  */
 public class UserDTO {
+
     private int userId;
     private String username;
     private String password;
@@ -21,11 +22,12 @@ public class UserDTO {
     private String status;      // ACTIVE, INACTIVE, BLOCKED
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    private boolean isDraft;
 
     public UserDTO() {
     }
 
-    public UserDTO(int userId, String username, String password, String fullName, String email, String phone, String role, String status) {
+    public UserDTO(int userId, String username, String password, String fullName, String email, String phone, String role, String status, boolean isDraft) {
         this.userId = userId;
         this.username = username;
         this.password = password;
@@ -34,6 +36,7 @@ public class UserDTO {
         this.phone = phone;
         this.role = role;
         this.status = status;
+        this.isDraft = isDraft;
     }
 
     public UserDTO(int userId, String username, String password, String fullName, String email, String phone, String role, String status, Timestamp createdAt, Timestamp updatedAt) {
@@ -129,16 +132,11 @@ public class UserDTO {
         this.updatedAt = updatedAt;
     }
 
-    @Override
-    public String toString() {
-        return "UserDTO{" +
-                "userId=" + userId +
-                ", username='" + username + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", role='" + role + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+    public boolean isIsDraft() {
+        return isDraft;
+    }
+
+    public void setIsDraft(boolean isDraft) {
+        this.isDraft = isDraft;
     }
 }
