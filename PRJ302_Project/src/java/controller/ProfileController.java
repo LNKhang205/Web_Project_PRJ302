@@ -83,7 +83,7 @@ public class ProfileController extends HttpServlet {
             request.setAttribute("msg", msg);
 
             // Chuyển hướng về trang profile
-            request.getRequestDispatcher("/customer/cus_profile_options/cus_view_editProfile.jsp").forward(request, response);
+            request.getRequestDispatcher("/customer/profile.jsp").forward(request, response);
         }
     }
 
