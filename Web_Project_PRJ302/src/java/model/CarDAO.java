@@ -18,273 +18,14 @@ import utils.DbUtils;
  * @author VNT
  */
 public class CarDAO {
-   
-        // Số xe mỗi trang
-    private static final int CARS_PER_PAGE = 12;
     
     public CarDAO() {
     }
     
     /**
-     * Lấy xe theo trang (PAGINATION)
-     * @param page - Số trang (bắt đầu từ 1)
-     * @param carsPerPage - Số xe mỗi trang
-     * @return List<CarDTO>
-     */
-    public List<CarDTO> getCarsByPage(int page, int carsPerPage) {
-        List<CarDTO> list = new ArrayList<>();
-        Connection conn = null;
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        
-        try {
-            conn = DbUtils.getConnection();
-            
-            // Tính OFFSET
-            int offset = (page - 1) * carsPerPage;
-            
-            // SQL Server sử dụng OFFSET ... FETCH
-            String sql = "SELECT c.*, cm.model_name, b.brand_name, b.brand_id " +
-                        "FROM Car c " +
-                        "INNER JOIN CarModel cm ON c.model_id = cm.model_id " +
-                        "INNER JOIN Brand b ON cm.brand_id = b.brand_id " +
-                        "ORDER BY c.car_id DESC " +
-                        "OFFSET ? ROWS " +
-                        "FETCH NEXT ? ROWS ONLY";
-            
-            pst = conn.prepareStatement(sql);
-            pst.setInt(1, offset);
-            pst.setInt(2, carsPerPage);
-            rs = pst.executeQuery();
-            
-            while (rs.next()) {
-                CarDTO car = extractCarFromResultSet(rs);
-                list.add(car);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeResources(conn, pst, rs);
-        }
-        
-        return list;
-    }
-    
-    /**
-     * Lấy xe theo trang với bộ lọc (PAGINATION + FILTER)
-     * @param page
-     * @param carsPerPage
-     * @param brandId - null nếu không lọc
-     * @param categoryId - null nếu không lọc
-     * @param minPrice - null nếu không lọc
-     * @param maxPrice - null nếu không lọc
-     * @param status - null nếu không lọc
-     * @return List<CarDTO>
-     */
-    public List<CarDTO> getCarsByPageWithFilter(int page, int carsPerPage, 
-                                                  Integer brandId, Integer categoryId,
-                                                  BigDecimal minPrice, BigDecimal maxPrice,
-                                                  String status) {
-        List<CarDTO> list = new ArrayList<>();
-        Connection conn = null;
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        
-        try {
-            conn = DbUtils.getConnection();
-            int offset = (page - 1) * carsPerPage;
-            
-            // Build SQL động
-            StringBuilder sql = new StringBuilder();
-            sql.append("SELECT c.*, cm.model_name, b.brand_name, b.brand_id ");
-            sql.append("FROM Car c ");
-            sql.append("INNER JOIN CarModel cm ON c.model_id = cm.model_id ");
-            sql.append("INNER JOIN Brand b ON cm.brand_id = b.brand_id ");
-            
-            // Nếu filter theo category, cần JOIN thêm
-            if (categoryId != null) {
-                sql.append("INNER JOIN CarCategory cc ON c.car_id = cc.car_id ");
-            }
-            
-            // WHERE clause
-            List<String> conditions = new ArrayList<>();
-            if (brandId != null) {
-                conditions.add("b.brand_id = ?");
-            }
-            if (categoryId != null) {
-                conditions.add("cc.category_id = ?");
-            }
-            if (minPrice != null) {
-                conditions.add("c.price >= ?");
-            }
-            if (maxPrice != null) {
-                conditions.add("c.price <= ?");
-            }
-            if (status != null && !status.isEmpty()) {
-                conditions.add("c.status = ?");
-            }
-            
-            if (!conditions.isEmpty()) {
-                sql.append("WHERE ");
-                sql.append(String.join(" AND ", conditions));
-                sql.append(" ");
-            }
-            
-            sql.append("ORDER BY c.car_id DESC ");
-            sql.append("OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
-            
-            pst = conn.prepareStatement(sql.toString());
-            
-            // Set parameters
-            int paramIndex = 1;
-            if (brandId != null) {
-                pst.setInt(paramIndex++, brandId);
-            }
-            if (categoryId != null) {
-                pst.setInt(paramIndex++, categoryId);
-            }
-            if (minPrice != null) {
-                pst.setBigDecimal(paramIndex++, minPrice);
-            }
-            if (maxPrice != null) {
-                pst.setBigDecimal(paramIndex++, maxPrice);
-            }
-            if (status != null && !status.isEmpty()) {
-                pst.setString(paramIndex++, status);
-            }
-            pst.setInt(paramIndex++, offset);
-            pst.setInt(paramIndex++, carsPerPage);
-            
-            rs = pst.executeQuery();
-            
-            while (rs.next()) {
-                CarDTO car = extractCarFromResultSet(rs);
-                list.add(car);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeResources(conn, pst, rs);
-        }
-        
-        return list;
-    }
-    
-    /**
-     * Đếm tổng số xe (để tính số trang)
-     * @return int
-     */
-    public int getTotalCars() {
-        Connection conn = null;
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        
-        try {
-            conn = DbUtils.getConnection();
-            String sql = "SELECT COUNT(*) as total FROM Car";
-            pst = conn.prepareStatement(sql);
-            rs = pst.executeQuery();
-            
-            if (rs.next()) {
-                return rs.getInt("total");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeResources(conn, pst, rs);
-        }
-        
-        return 0;
-    }
-    
-    /**
-     * Đếm tổng số xe với bộ lọc (để tính số trang)
-     * @param brandId
-     * @param categoryId
-     * @param minPrice
-     * @param maxPrice
-     * @param status
-     * @return int
-     */
-    public int getTotalCarsWithFilter(Integer brandId, Integer categoryId,
-                                      BigDecimal minPrice, BigDecimal maxPrice,
-                                      String status) {
-        Connection conn = null;
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        
-        try {
-            conn = DbUtils.getConnection();
-            
-            StringBuilder sql = new StringBuilder();
-            sql.append("SELECT COUNT(DISTINCT c.car_id) as total ");
-            sql.append("FROM Car c ");
-            sql.append("INNER JOIN CarModel cm ON c.model_id = cm.model_id ");
-            sql.append("INNER JOIN Brand b ON cm.brand_id = b.brand_id ");
-            
-            if (categoryId != null) {
-                sql.append("INNER JOIN CarCategory cc ON c.car_id = cc.car_id ");
-            }
-            
-            List<String> conditions = new ArrayList<>();
-            if (brandId != null) {
-                conditions.add("b.brand_id = ?");
-            }
-            if (categoryId != null) {
-                conditions.add("cc.category_id = ?");
-            }
-            if (minPrice != null) {
-                conditions.add("c.price >= ?");
-            }
-            if (maxPrice != null) {
-                conditions.add("c.price <= ?");
-            }
-            if (status != null && !status.isEmpty()) {
-                conditions.add("c.status = ?");
-            }
-            
-            if (!conditions.isEmpty()) {
-                sql.append("WHERE ");
-                sql.append(String.join(" AND ", conditions));
-            }
-            
-            pst = conn.prepareStatement(sql.toString());
-            
-            int paramIndex = 1;
-            if (brandId != null) {
-                pst.setInt(paramIndex++, brandId);
-            }
-            if (categoryId != null) {
-                pst.setInt(paramIndex++, categoryId);
-            }
-            if (minPrice != null) {
-                pst.setBigDecimal(paramIndex++, minPrice);
-            }
-            if (maxPrice != null) {
-                pst.setBigDecimal(paramIndex++, maxPrice);
-            }
-            if (status != null && !status.isEmpty()) {
-                pst.setString(paramIndex++, status);
-            }
-            
-            rs = pst.executeQuery();
-            
-            if (rs.next()) {
-                return rs.getInt("total");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeResources(conn, pst, rs);
-        }
-        
-        return 0;
-    }
-    
-    /**
      * Tìm xe theo ID
      * @param id
-     * @return CarDTO hoặc null
+     * @return CarDTO hoặc null nếu không tìm thấy
      */
     public CarDTO searchById(int id) {
         CarDTO car = null;
@@ -300,6 +41,7 @@ public class CarDAO {
                         "INNER JOIN Brand b ON cm.brand_id = b.brand_id " +
                         "WHERE c.car_id = ?";
             
+            System.out.println(sql);
             pst = conn.prepareStatement(sql);
             pst.setInt(1, id);
             rs = pst.executeQuery();
@@ -313,47 +55,8 @@ public class CarDAO {
             closeResources(conn, pst, rs);
         }
         
+        System.out.println(car);
         return car;
-    }
-    
-    // ===== HELPER METHODS =====
-    
-    /**
-     * Trích xuất CarDTO từ ResultSet
-     */
-    private CarDTO extractCarFromResultSet(ResultSet rs) throws SQLException {
-        int carId = rs.getInt("car_id");
-        int modelId = rs.getInt("model_id");
-        BigDecimal price = rs.getBigDecimal("price");
-        String color = rs.getString("color");
-        String engine = rs.getString("engine");
-        String transmission = rs.getString("transmission");
-        int mileage = rs.getInt("mileage");
-        String status = rs.getString("status");
-        String description = rs.getString("description");
-        Timestamp createdAt = rs.getTimestamp("created_at");
-        Timestamp updatedAt = rs.getTimestamp("updated_at");
-        
-        String modelName = rs.getString("model_name");
-        String brandName = rs.getString("brand_name");
-        int brandId = rs.getInt("brand_id");
-        
-        return new CarDTO(carId, modelId, price, color, engine, transmission, 
-                         mileage, status, description, createdAt, updatedAt, 
-                         modelName, brandName, brandId);
-    }
-    
-    /**
-     * Đóng resources
-     */
-    private void closeResources(Connection conn, PreparedStatement pst, ResultSet rs) {
-        try {
-            if (rs != null) rs.close();
-            if (pst != null) pst.close();
-            if (conn != null) conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
     
     /**
@@ -776,6 +479,34 @@ public class CarDAO {
     }
     
     /**
+     * Đếm tổng số xe
+     * @return int
+     */
+    public int getTotalCars() {
+        Connection conn = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DbUtils.getConnection();
+            String sql = "SELECT COUNT(*) as total FROM Car";
+            
+            pst = conn.prepareStatement(sql);
+            rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, pst, rs);
+        }
+        
+        return 0;
+    }
+    
+    /**
      * Đếm số xe theo trạng thái
      * @param status
      * @return int
@@ -878,4 +609,50 @@ public class CarDAO {
         return list;
     }
     
+    // ===== HELPER METHODS =====
+    
+    /**
+     * Trích xuất thông tin Car từ ResultSet
+     * @param rs
+     * @return CarDTO
+     * @throws SQLException
+     */
+    private CarDTO extractCarFromResultSet(ResultSet rs) throws SQLException {
+        int carId = rs.getInt("car_id");
+        int modelId = rs.getInt("model_id");
+        BigDecimal price = rs.getBigDecimal("price");
+        String color = rs.getString("color");
+        String engine = rs.getString("engine");
+        String transmission = rs.getString("transmission");
+        int mileage = rs.getInt("mileage");
+        String status = rs.getString("status");
+        String description = rs.getString("description");
+        Timestamp createdAt = rs.getTimestamp("created_at");
+        Timestamp updatedAt = rs.getTimestamp("updated_at");
+        
+        // Thông tin từ JOIN
+        String modelName = rs.getString("model_name");
+        String brandName = rs.getString("brand_name");
+        int brandId = rs.getInt("brand_id");
+        
+        return new CarDTO(carId, modelId, price, color, engine, transmission, 
+                         mileage, status, description, createdAt, updatedAt, 
+                         modelName, brandName, brandId);
+    }
+    
+    /**
+     * Đóng các resources (Connection, PreparedStatement, ResultSet)
+     * @param conn
+     * @param pst
+     * @param rs
+     */
+    private void closeResources(Connection conn, PreparedStatement pst, ResultSet rs) {
+        try {
+            if (rs != null) rs.close();
+            if (pst != null) pst.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
