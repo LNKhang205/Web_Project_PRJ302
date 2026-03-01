@@ -1,10 +1,13 @@
-/Web_Project_PRJ302/nbproject/private/
-/Web_Project_PRJ302/build/
-/Web_Project_PRJ302/dist/
-/Web_05_a/nbproject/private/
-/Web_05_a/build/
-/Web_05_a/dist/
-/Web_06_a/nbproject/private/
-/Web_06_a/build/
-/Web_06_a/dist/
-/Test_01/nbproject/private/
+# ===== BUILD FOLDERS =====
+build/
+dist/
+
+# ===== COMPILED FILES =====
+*.class
+
+# ===== NETBEANS PRIVATE =====
+nbproject/private/
+
+# ===== OS FILES =====
+.DS_Store
+Thumbs.db
