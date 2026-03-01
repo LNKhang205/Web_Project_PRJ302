@@ -23,8 +23,7 @@
                     Welcome, ${user.fullName}
                 </h1>
 
-                <a href="../MainController?action=logout">Logout</a><br/>
-                <a href="profile.jsp">My Profile</a><br/>
+                <a href="cus_profile_options/profile.jsp">My Profile</a><br/>
                 <a href="review.jsp">Review (test)</a><br/>
             </c:when>
 
